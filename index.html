@@ -61,52 +61,44 @@
         </div>
       </div>
 
-      <div class="task">
-        <div class="task-frame">
-          <img id="task-gif" src="static/media/gifs/task_spray_can.gif" width="800" height="1080"
-               alt="The prediction task on a held-out clip: the observed frames and both gloves' readings, then the future frames to predict.">
+
+      <div class="task" id="task">
+        <div class="task-card">
+          <div class="task-stage">
+            <video id="task-video" muted playsinline preload="auto" width="512" height="384"
+                   aria-label="Observed frames of a held-out clip"></video>
+            <div class="veil" id="task-veil" aria-hidden="true"><span class="q">?</span><span class="veil-txt">to predict</span></div>
+            <span class="stage-tag" id="task-tag">observed frame 0</span>
+          </div>
+          <div class="task-tactile">
+            <canvas id="task-tactile" aria-label="Tactile readings of both gloves for the current frame" role="img"></canvas>
+            <div class="glove-labels"><span>left glove</span><span>right glove</span></div>
+          </div>
+          <p class="task-key"><i class="key-heat"></i>pressure <i class="key-bend"></i>finger flexion</p>
         </div>
         <div class="chips" role="group" aria-label="Choose a clip">
-          <button type="button" class="chip" aria-pressed="true" data-task="static/media/gifs/task_spray_can.gif">Spray can</button>
-          <button type="button" class="chip" aria-pressed="false" data-task="static/media/gifs/task_bathroom_items.gif">Bathroom items</button>
-          <button type="button" class="chip" aria-pressed="false" data-task="static/media/gifs/task_fold_shorts.gif">Fold shorts</button>
-          <button type="button" class="chip" aria-pressed="false" data-task="static/media/gifs/task_g_clamp_release.gif">G-clamp</button>
+          <button type="button" class="chip" aria-pressed="true" data-task="spray_can">Spray can</button>
+          <button type="button" class="chip" aria-pressed="false" data-task="bathroom_items">Bathroom items</button>
+          <button type="button" class="chip" aria-pressed="false" data-task="fold_shorts">Fold shorts</button>
+          <button type="button" class="chip" aria-pressed="false" data-task="g_clamp_release">G-clamp</button>
         </div>
       </div>
     </div>
 
-    <div class="wrap timeline">
-      <div class="scroller">
-        <svg viewBox="0 0 1000 104" role="img" aria-labelledby="tl-title">
-          <title id="tl-title">Frames 0 to 12 are observed with touch and hand pose; frames 13 to 48 are predicted at once.</title>
-          <text class="tl-seg o" x="10" y="22">observed: RGB, hand pose, touch</text>
-          <text class="tl-seg p" x="270" y="22">predicted: 36 frames at once</text>
-          <g class="tl-obs">
-            <rect x="10" y="32" width="17" height="22" rx="3"/><rect x="30" y="32" width="17" height="22" rx="3"/><rect x="50" y="32" width="17" height="22" rx="3"/><rect x="70" y="32" width="17" height="22" rx="3"/><rect x="90" y="32" width="17" height="22" rx="3"/><rect x="110" y="32" width="17" height="22" rx="3"/><rect x="130" y="32" width="17" height="22" rx="3"/><rect x="150" y="32" width="17" height="22" rx="3"/><rect x="170" y="32" width="17" height="22" rx="3"/><rect x="190" y="32" width="17" height="22" rx="3"/><rect x="210" y="32" width="17" height="22" rx="3"/><rect x="230" y="32" width="17" height="22" rx="3"/><rect x="250" y="32" width="17" height="22" rx="3"/>
-          </g>
-          <g class="tl-pred">
-            <rect x="270" y="32" width="17" height="22" rx="3"/><rect x="290" y="32" width="17" height="22" rx="3"/><rect x="310" y="32" width="17" height="22" rx="3"/><rect x="330" y="32" width="17" height="22" rx="3"/><rect x="350" y="32" width="17" height="22" rx="3"/><rect x="370" y="32" width="17" height="22" rx="3"/><rect x="390" y="32" width="17" height="22" rx="3"/><rect x="410" y="32" width="17" height="22" rx="3"/><rect x="430" y="32" width="17" height="22" rx="3"/><rect x="450" y="32" width="17" height="22" rx="3"/><rect x="470" y="32" width="17" height="22" rx="3"/><rect x="490" y="32" width="17" height="22" rx="3"/><rect x="510" y="32" width="17" height="22" rx="3"/><rect x="530" y="32" width="17" height="22" rx="3"/><rect x="550" y="32" width="17" height="22" rx="3"/><rect x="570" y="32" width="17" height="22" rx="3"/>
-          </g>
-          <g class="tl-pred" opacity="0.7">
-            <rect x="590" y="32" width="17" height="22" rx="3"/><rect x="610" y="32" width="17" height="22" rx="3"/><rect x="630" y="32" width="17" height="22" rx="3"/><rect x="650" y="32" width="17" height="22" rx="3"/><rect x="670" y="32" width="17" height="22" rx="3"/><rect x="690" y="32" width="17" height="22" rx="3"/><rect x="710" y="32" width="17" height="22" rx="3"/><rect x="730" y="32" width="17" height="22" rx="3"/><rect x="750" y="32" width="17" height="22" rx="3"/><rect x="770" y="32" width="17" height="22" rx="3"/><rect x="790" y="32" width="17" height="22" rx="3"/><rect x="810" y="32" width="17" height="22" rx="3"/><rect x="830" y="32" width="17" height="22" rx="3"/><rect x="850" y="32" width="17" height="22" rx="3"/><rect x="870" y="32" width="17" height="22" rx="3"/><rect x="890" y="32" width="17" height="22" rx="3"/>
-          </g>
-          <g class="tl-pred" opacity="0.45">
-            <rect x="910" y="32" width="17" height="22" rx="3"/><rect x="930" y="32" width="17" height="22" rx="3"/><rect x="950" y="32" width="17" height="22" rx="3"/><rect x="970" y="32" width="17" height="22" rx="3"/>
-          </g>
-          <rect class="tl-head" x="10" y="57" width="17" height="3" rx="1.5"/>
-          <text class="tl-tick" x="18.5" y="72" text-anchor="middle">0</text>
-          <text class="tl-tick" x="258.5" y="72" text-anchor="middle">12</text>
-          <text class="tl-tick" x="278.5" y="72" text-anchor="middle">13</text>
-          <text class="tl-tick" x="578.5" y="72" text-anchor="middle">28</text>
-          <text class="tl-tick" x="898.5" y="72" text-anchor="middle">44</text>
-          <text class="tl-tick" x="978.5" y="72" text-anchor="middle">48</text>
-          <path class="tl-bracket" d="M270 80 v6 H587 v-6"/>
-          <path class="tl-bracket" d="M590 80 v6 H907 v-6"/>
-          <path class="tl-bracket" d="M910 80 v6 H987 v-6"/>
-          <text class="tl-chunk" x="428.5" y="100" text-anchor="middle">chunk 1</text>
-          <text class="tl-chunk" x="748.5" y="100" text-anchor="middle">chunk 2</text>
-          <text class="tl-chunk" x="948.5" y="100" text-anchor="middle">3</text>
-        </svg>
+    <div class="wrap timeline" aria-label="Frames 0 to 12 are observed with touch and hand pose; frames 13 to 48 are predicted at once.">
+      <div class="tl-grid">
+        <span class="tl-lab o" style="grid-column:1 / 14">observed: RGB, hand pose, touch</span>
+        <span class="tl-lab p" style="grid-column:14 / 50">predicted: 36 frames at once</span>
+        <span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell o"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p1"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p2"></span><span class="tl-cell p p3"></span><span class="tl-cell p p3"></span><span class="tl-cell p p3"></span><span class="tl-cell p p3"></span>
+        <span class="tl-tick" style="grid-column:1">0</span>
+        <span class="tl-tick" style="grid-column:13">12</span>
+        <span class="tl-tick hide-narrow" style="grid-column:14">13</span>
+        <span class="tl-tick" style="grid-column:29">28</span>
+        <span class="tl-tick" style="grid-column:45">44</span>
+        <span class="tl-tick" style="grid-column:49">48</span>
+        <span class="tl-chunk" style="grid-column:14 / 30">chunk 1</span>
+        <span class="tl-chunk" style="grid-column:30 / 46">chunk 2</span>
+        <span class="tl-chunk" style="grid-column:46 / 50">3</span>
       </div>
     </div>
   </section>
@@ -145,9 +137,34 @@
           zero-initialized residual in a pretrained video diffusion transformer.</p>
         <div class="heat-rule"></div>
       </div>
-      <div class="media card pad">
-        <img src="static/media/figures/pipeline.png" loading="lazy" width="1963" height="753"
-             alt="Pipeline: observed frames, hand pose and touch; each hand's tactile embedding is placed with a footprint at the hand and added as a residual into 5 of the 30 blocks of a video diffusion transformer, which predicts the future frames.">
+      <div class="pipe">
+        <div class="pcol pobs">
+          <div class="phead">Observations <i>t</i> &le; <i>K</i></div>
+          <figure class="pthumb"><img src="static/v2/media/pipeline/frames.jpg" alt="Observed frame" loading="lazy"><figcaption>frames</figcaption></figure>
+          <figure class="pthumb"><img src="static/v2/media/pipeline/handpose.jpg" alt="Rendered hand skeleton" loading="lazy"><figcaption>hand pose</figcaption></figure>
+          <figure class="pthumb ptouch"><canvas id="pipe-tactile" role="img" aria-label="Tactile readings of both gloves"></canvas><figcaption>touch</figcaption></figure>
+          <p class="pinstr" id="pipe-instr">Task instruction</p>
+        </div>
+        <div class="parrow" aria-hidden="true"></div>
+        <div class="pcol pmodel">
+          <div class="phead">Video diffusion transformer, 30 blocks</div>
+          <div class="blocks" aria-label="30 transformer blocks; the tactile residual is added in 5 of them"><span class="blk inj"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk inj"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk inj"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk inj"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk inj"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span><span class="blk"></span></div>
+          <p class="pnote"><i class="dot"></i>tactile residual added in 5 of the 30 blocks</p>
+          <div class="tpath">
+            <div class="tstep"><b>Embed</b><span><i>e</i><sub><i>t</i></sub><sup><i>h</i></sup> = <i>W</i><sub><i>h</i></sub><i>s</i><sub><i>t</i></sub><sup><i>h</i></sup> + frame(<i>t</i>) + hand(<i>h</i>)</span></div>
+            <div class="tarrow" aria-hidden="true"></div>
+            <div class="tstep"><b>Place</b><img src="static/v2/media/pipeline/footprint.jpg" alt="Gaussian footprint at the hand" loading="lazy"><span>footprint <i>g</i> at the hand</span></div>
+            <div class="tarrow" aria-hidden="true"></div>
+            <div class="tstep"><b>Add as a residual</b><span><i>u</i> &larr; <i>u</i> + proj(LN(<i>e</i>)) <i>g</i></span></div>
+          </div>
+        </div>
+        <div class="parrow" aria-hidden="true"></div>
+        <div class="pcol ppred">
+          <div class="phead">Predicted frames <i>t</i> &gt; <i>K</i></div>
+          <figure class="pthumb"><img src="static/v2/media/pipeline/predicted.jpg" alt="Predicted frame" loading="lazy"></figure>
+          <div class="ptag train"><b>Train</b><span><i>K</i> &isin; {4, &hellip;, 44}, flow-matching loss to ground truth</span></div>
+          <div class="ptag infer"><b>Infer</b><span><i>K</i> = 12, predict 36 frames at once</span></div>
+        </div>
       </div>
     </div>
   </section>
@@ -159,17 +176,38 @@
         <h2 id="res-h">Better visual quality, hand location and motion</h2>
         <div class="heat-rule"></div>
       </div>
-      <div class="media card pad">
-        <img src="static/media/figures/fig_teaser.png" loading="lazy" width="1815" height="707"
-             alt="A held-out clip of two hands opening a spray can: tactile field, observation and conditioning footprint at frame 12, then the ground truth, the vision-only prediction and the DTWM prediction at frame 44; a radar chart compares DTWM with TouchWorld, FeelWorld and VT-WM on six metrics.">
+      <div class="fig1">
+        <div class="fig1-tiles">
+          <figure class="tile"><div class="tile-media tac"><canvas id="teaser-tactile" role="img" aria-label="Tactile field at frame 12"></canvas></div><figcaption>tactile field, frame 12</figcaption></figure>
+          <figure class="tile"><div class="tile-media"><img src="static/v2/media/teaser/observation.jpg" alt="Observation at frame 12" loading="lazy"><svg class="markers" id="teaser-markers" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"></svg></div><figcaption>observation, frame 12</figcaption></figure>
+          <figure class="tile"><div class="tile-media"><img src="static/v2/media/teaser/footprint.jpg" alt="Conditioning footprint" loading="lazy"></div><figcaption class="c-future-text">conditioning footprint</figcaption></figure>
+          <figure class="tile"><div class="tile-media"><img src="static/v2/media/teaser/gt.jpg" alt="Ground truth at frame 44" loading="lazy"></div><figcaption>ground truth, frame 44</figcaption></figure>
+          <figure class="tile"><div class="tile-media"><img src="static/v2/media/teaser/vision.jpg" alt="Vision-only baseline at frame 44" loading="lazy"></div><figcaption>vision-only baseline</figcaption></figure>
+          <figure class="tile dtwm"><div class="tile-media"><img src="static/v2/media/teaser/dtwm.jpg" alt="DTWM at frame 44" loading="lazy"></div><figcaption>DTWM (ours)</figcaption></figure>
+        </div>
+        <div class="fig1-radar">
+          <div class="chart" id="radar"></div>
+          <div class="legend"><span><i class="sw c-tw"></i>TouchWorld</span><span><i class="sw c-fw"></i>FeelWorld</span><span><i class="sw c-vt"></i>VT-WM</span><span><i class="sw c-dtwm"></i>DTWM (ours)</span></div>
+        </div>
       </div>
-      <div class="switch" role="tablist" aria-label="Choose a clip">
-        <button type="button" role="tab" aria-selected="true" data-cmp="static/media/gifs/cmp_pick_up_power_adapter.gif">Pick up power adapter</button>
-        <button type="button" role="tab" aria-selected="false" data-cmp="static/media/gifs/cmp_squeeze_toothpaste.gif">Squeeze toothpaste</button>
-      </div>
-      <div class="media card">
-        <img id="cmp-gif" src="static/media/gifs/cmp_pick_up_power_adapter.gif" loading="lazy" width="1414" height="652"
-             alt="First predicted chunk of all six models: Pick up power adapter">
+      <div class="cmp" id="cmp-id" data-clips="pick_up_power_adapter,squeeze_toothpaste">
+        <div class="cmp-bar">
+          <div class="switch" role="tablist" aria-label="Clip"><button type="button" role="tab" data-clip="pick_up_power_adapter" aria-selected="true">Pick up power adapter</button><button type="button" role="tab" data-clip="squeeze_toothpaste" aria-selected="false">Squeeze toothpaste</button></div>
+          <div class="switch" role="tablist" aria-label="View">
+            <button type="button" role="tab" data-view="full" aria-selected="true">Full frame</button>
+            <button type="button" role="tab" data-view="hands" aria-selected="false">Hands</button>
+          </div>
+        </div>
+        <div class="cmp-grid">
+          <figure class="ctile gt"><video data-model="gt" muted loop playsinline preload="metadata"></video><figcaption>Ground truth</figcaption></figure>
+          <figure class="ctile dtwm"><video data-model="dtwm" muted loop playsinline preload="metadata"></video><figcaption>DTWM (ours)</figcaption></figure>
+          <figure class="ctile "><video data-model="vision" muted loop playsinline preload="metadata"></video><figcaption>Vision-only baseline</figcaption></figure>
+          <figure class="ctile "><video data-model="touchworld" muted loop playsinline preload="metadata"></video><figcaption>TouchWorld</figcaption></figure>
+          <figure class="ctile "><video data-model="vtwm" muted loop playsinline preload="metadata"></video><figcaption>VT-WM</figcaption></figure>
+          <figure class="ctile "><video data-model="feelworld" muted loop playsinline preload="metadata"></video><figcaption>FeelWorld</figcaption></figure>
+        </div>
+        <div class="cmp-progress" aria-hidden="true"><span class="obs" style="flex:13"></span><span class="pred" style="flex:16"></span><i class="head"></i></div>
+        <div class="cmp-meta"><span class="cmp-phase">observed frame 0</span><span class="cmp-task"></span></div>
       </div>
       <p class="cap">First predicted chunk, frames 13 to 28. Dashed boxes: ground-truth hand regions.</p>
     </div>
@@ -181,9 +219,24 @@
         <h2 id="ood-h">Better generalization to unseen objects &amp; tasks</h2>
         <div class="heat-rule"></div>
       </div>
-      <div class="media card">
-        <img src="static/media/gifs/cmp_ood_push_cart.gif" loading="lazy" width="1414" height="652"
-             alt="First predicted chunk of all six models on pushing a cart, a task unseen in training.">
+      <div class="cmp" id="cmp-ood" data-clips="ood_push_cart">
+        <div class="cmp-bar">
+          
+          <div class="switch" role="tablist" aria-label="View">
+            <button type="button" role="tab" data-view="full" aria-selected="true">Full frame</button>
+            <button type="button" role="tab" data-view="hands" aria-selected="false">Hands</button>
+          </div>
+        </div>
+        <div class="cmp-grid">
+          <figure class="ctile gt"><video data-model="gt" muted loop playsinline preload="metadata"></video><figcaption>Ground truth</figcaption></figure>
+          <figure class="ctile dtwm"><video data-model="dtwm" muted loop playsinline preload="metadata"></video><figcaption>DTWM (ours)</figcaption></figure>
+          <figure class="ctile "><video data-model="vision" muted loop playsinline preload="metadata"></video><figcaption>Vision-only baseline</figcaption></figure>
+          <figure class="ctile "><video data-model="touchworld" muted loop playsinline preload="metadata"></video><figcaption>TouchWorld</figcaption></figure>
+          <figure class="ctile "><video data-model="vtwm" muted loop playsinline preload="metadata"></video><figcaption>VT-WM</figcaption></figure>
+          <figure class="ctile "><video data-model="feelworld" muted loop playsinline preload="metadata"></video><figcaption>FeelWorld</figcaption></figure>
+        </div>
+        <div class="cmp-progress" aria-hidden="true"><span class="obs" style="flex:13"></span><span class="pred" style="flex:16"></span><i class="head"></i></div>
+        <div class="cmp-meta"><span class="cmp-phase">observed frame 0</span><span class="cmp-task"></span></div>
       </div>
     </div>
   </section>
@@ -197,20 +250,28 @@
           evolves differently, and so do the manipulations that follow.</p>
         <div class="heat-rule"></div>
       </div>
-      <div class="duo">
-        <div class="card pad">
-          <img src="static/media/figures/fig_motivation.png" loading="lazy" width="1140" height="1159"
-               alt="Two clips of a G-clamp task that look alike at the last observed frame: the summed pressure holds steady in one and decays in the other; one second later the grasp holds in the first and the hands have released in the second.">
+      <div class="why-grid">
+        <div class="motiv" id="motiv">
+          <div class="mcol" data-key="steady">
+            <h3 class="mhead c-hold-text">force holds steady</h3>
+            <figure class="mimg"><img src="static/v2/media/motivation/steady_12.jpg" alt="Observed frame 12, force holds steady" loading="lazy"><span class="mtag">observed frame 12</span></figure>
+            <div class="chart mchart" data-clip="steady"></div>
+            <figure class="mimg out c-hold-border"><img src="static/v2/media/motivation/steady_44.jpg" alt="Future frame 44: the grasp holds" loading="lazy"><span class="mtag outcome c-hold-bg">grasp holds</span><span class="mtag lower">future frame 44</span></figure>
+          </div>
+          <div class="mcol" data-key="decays">
+            <h3 class="mhead c-release-text">force decays</h3>
+            <figure class="mimg"><img src="static/v2/media/motivation/decays_12.jpg" alt="Observed frame 12, force decays" loading="lazy"><span class="mtag">observed frame 12</span></figure>
+            <div class="chart mchart" data-clip="decays"></div>
+            <figure class="mimg out c-release-border"><img src="static/v2/media/motivation/decays_44.jpg" alt="Future frame 44: the hands release" loading="lazy"><span class="mtag outcome c-release-bg">hands release</span><span class="mtag lower">future frame 44</span></figure>
+          </div>
+          <div class="legend mlegend"><span><i class="ln solid"></i>left hand</span><span><i class="ln dashed"></i>right hand</span></div>
         </div>
         <div class="txt">
           <h3>Changing touch &#8594; the interaction is about to change</h3>
           <p>A decaying touch leads to a release 2.5&times; as often (16%), a rising touch 1.8&times; as often (12%).</p>
           <p>A rising force usually marks a short push, press or pinch in progress, which ends within a second and the
             hand lets go.</p>
-          <div class="card pad">
-            <img src="static/media/figures/force_trend.png" loading="lazy" width="2666" height="1280"
-                 alt="Chance that a hand in contact lets go within the next half second: 7% when its force holds steady, 16% when it decays, 12% when it rises.">
-          </div>
+          <div class="chart" id="force-trend"></div>
         </div>
       </div>
     </div>
@@ -226,10 +287,8 @@
           reduces its uncertainty. An uncertain model averages over possible futures and produces blur.</p>
         <div class="heat-rule"></div>
       </div>
-      <div class="media card pad">
-        <img src="static/media/figures/train_touch.png" loading="lazy" width="2666" height="1120"
-             alt="Full-frame LPIPS, hand motion, hand area error and sharpness for the vision-only baseline, touch in training only, and touch in training and inference.">
-      </div>
+      <div class="legend tt-legend"><span><i class="sw c-vision"></i>Vision-only baseline</span><span><i class="sw c-trainonly"></i>Touch in training only</span><span><i class="sw c-dtwm"></i>Touch in training and inference (DTWM)</span></div>
+      <div class="chart" id="train-touch-chart"></div>
     </div>
   </section>
 
@@ -240,10 +299,8 @@
         <h2 id="hz-h">The benefit increases over the prediction horizon</h2>
         <div class="heat-rule"></div>
       </div>
-      <div class="media card pad">
-        <img src="static/media/figures/fig_horizon.png" loading="lazy" width="1590" height="599"
-             alt="(a) LPIPS of DTWM and the vision-only model over cumulative scoring windows; (b) the per-frame difference in four temporal segments, larger after the first chunk.">
-      </div>
+      <div class="legend"><span><i class="sw c-vision"></i>Vision-only baseline</span><span><i class="sw c-dtwm"></i>DTWM (ours)</span></div>
+      <div class="chart" id="horizon-chart"></div>
     </div>
   </section>
 
@@ -271,6 +328,9 @@
   <div class="wrap">Tactile data from <a href="https://arxiv.org/abs/2605.13083">TouchAnything</a> (Zhou et al., 2026).</div>
 </footer>
 
+<script src="static/js/tactile.js"></script>
+<script src="static/js/charts.js"></script>
+<script src="static/js/players.js"></script>
 <script src="static/js/main.js"></script>
 </body>
 </html>

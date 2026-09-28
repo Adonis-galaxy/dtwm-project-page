@@ -4,42 +4,19 @@ Static project page for *Dexterous Tactile World Model*. No build step: `index.h
 
 ## Preview locally
 
-    cd website && python3 -m http.server 8000     # then open http://localhost:8000
+    python3 -m http.server 8000     # then open http://localhost:8000
 
-## Publish on GitHub Pages
+## Layout
 
-1. Push the contents of this folder to a repository (for example `dtwm.github.io` or a `gh-pages` branch).
-2. In the repository settings, Pages → deploy from the branch and folder that holds `index.html`.
-3. `.nojekyll` is included so GitHub serves every file as is.
+- `static/js/charts.js`: every chart is native SVG, drawn at the container width and redrawn on resize.
+- `static/js/tactile.js`: the bimanual glove panel (pressure on the glove cells, finger flexion as gauges), drawn on canvas.
+- `static/js/players.js`: the hero prediction-task player and the synchronised six-model comparison.
+- `static/css/style.css`: all colours are theme tokens; light in `:root`, dark under `prefers-color-scheme` and `[data-theme="dark"]`.
+- `static/v2/data/*.json`: the numbers behind each chart, each file naming the evaluation outputs it came from.
+- `static/v2/media/`: the video clips (H.264 MP4) and stills.
+- `static/media/figures/fig_teaser.png`: only used as the link-preview image.
 
-Media total about 29 MB (largest file 7.6 MB), well within GitHub limits.
+## When the paper is posted
 
-## Before making it public (TODO)
-
-- Paper link: the Paper button in the hero (currently "coming soon").
-- BibTeX: add the arXiv identifier to the `#bibtex` block once the paper is posted.
-- Check the venue's anonymity policy before the page goes public while the paper is under review.
-
-## Updating the media
-
-`build_assets.sh` copies the GIFs and videos from `DTWM/slides/videos`, renders the paper figures from
-`Paper_to_ICLR/figures/*.pdf`, and copies the force and train-touch charts from `DTWM/slides`. Re-run it after
-the paper figures change:
-
-    bash build_assets.sh
-
-The pipeline figure (`static/media/figures/pipeline.png`) comes from the talk slides because the paper draws it in
-TikZ inline; pass `PIPELINE_PNG=/path/to/pipeline.png` to replace it.
-
-## Contents
-
-| Section | Wording from | Media |
-|---|---|---|
-| Hero | slide 40 | `gifs/task_*.gif`, the prediction task on four held-out clips |
-| Predict the future with touch | slide 41 | none |
-| Pipeline | slide 44 | `figures/pipeline.png` |
-| Better visual quality, hand location and motion | slides 45 to 47 | `figures/fig_teaser.png` (paper Figure 1), `gifs/cmp_pick_up_power_adapter.gif`, `gifs/cmp_squeeze_toothpaste.gif` |
-| Better generalization to unseen objects & tasks | slide 48 | `gifs/cmp_ood_push_cart.gif` |
-| Why touch helps? | paper Figure 6, slide 50 | `figures/fig_motivation.png`, `figures/force_trend.png` |
-| Training with touch helps | slide 51 | `figures/train_touch.png` |
-| Prediction horizon | paper abstract | `figures/fig_horizon.png` (paper Figure 7) |
+- Paper button in the hero (currently "coming soon").
+- `#bibtex` block: add the arXiv identifier.

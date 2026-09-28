@@ -17,25 +17,73 @@
     var next = theme() === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
     window.dispatchEvent(new Event("resize"));
+    window.dispatchEvent(new Event("dtwm-theme"));
     try { localStorage.setItem("dtwm-theme", next); } catch (e) {}
     label();
   });
 
-  // ------------------------------------------------------------ selectors
-  function group(selector, onPick) {
-    var items = document.querySelectorAll(selector);
-    items.forEach(function (b) {
+  // ------------------------------------------------------------ web-native figures (static/v2)
+  var BASE = "static/v2/";
+  function getJSON(name) { return fetch(BASE + "data/" + name + ".json").then(function (r) { if (!r.ok) throw new Error(name); return r.json(); }); }
+  var redrawers = [];
+  function onTheme() { redrawers.forEach(function (f) { try { f(); } catch (e) {} }); }
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", onTheme); else if (mq.addListener) mq.addListener(onTheme);
+  }
+  window.addEventListener("dtwm-theme", onTheme);
+
+  getJSON("tactile_layout").then(function (layout) {
+    // hero task player; the timeline cells double as its progress bar
+    var cells = [].slice.call(document.querySelectorAll(".tl-cell"));
+    var tp = new Players.TaskPlayer({ video: document.getElementById("task-video"), canvas: document.getElementById("task-tactile"),
+      veil: document.getElementById("task-veil"), tag: document.getElementById("task-tag"), cells: cells, layout: layout, base: BASE });
+    tp.load("spray_can");
+    redrawers.push(tp.redraw);
+    var chips = document.querySelectorAll("[data-task]");
+    chips.forEach(function (b) {
       b.addEventListener("click", function () {
-        items.forEach(function (x) { x.setAttribute(x.getAttribute("role") === "tab" ? "aria-selected" : "aria-pressed", "false"); });
-        b.setAttribute(b.getAttribute("role") === "tab" ? "aria-selected" : "aria-pressed", "true");
-        onPick(b);
+        chips.forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true"); tp.load(b.getAttribute("data-task"));
       });
     });
-  }
-  var taskImg = document.getElementById("task-gif");
-  group("[data-task]", function (b) { taskImg.src = b.getAttribute("data-task"); taskImg.alt = "The prediction task on a held-out clip: " + b.textContent.trim(); });
-  var cmpImg = document.getElementById("cmp-gif");
-  group("[data-cmp]", function (b) { cmpImg.src = b.getAttribute("data-cmp"); cmpImg.alt = "First predicted chunk of all six models: " + b.textContent.trim(); });
+    window.addEventListener("resize", tp.redraw);
+
+    // paper Figure 1 tactile tile and pipeline touch panel
+    getJSON("teaser").then(function (t) {
+      var c = document.getElementById("teaser-tactile");
+      var draw = function () { Tactile.draw(c, layout, t.tactile, t.tactile.vmax); };
+      draw(); redrawers.push(draw); window.addEventListener("resize", draw);
+      var m = document.getElementById("teaser-markers");
+      if (m && t.centroids) m.innerHTML = t.centroids.map(function (p, i) {
+        var cls = i === 0 ? "mk-l" : "mk-r";
+        return '<g class="mk ' + cls + '"><line x1="' + (p[0] - 0.035) + '" x2="' + (p[0] + 0.035) + '" y1="' + p[1] + '" y2="' + p[1] + '"/>' +
+               '<line x1="' + p[0] + '" x2="' + p[0] + '" y1="' + (p[1] - 0.047) + '" y2="' + (p[1] + 0.047) + '"/></g>';
+      }).join("");
+    }).catch(function () {});
+    getJSON("pipeline").then(function (pd) {
+      var c = document.getElementById("pipe-tactile");
+      var draw = function () { Tactile.draw(c, layout, pd.tactile, pd.tactile.vmax); };
+      draw(); redrawers.push(draw); window.addEventListener("resize", draw);
+      var ins = document.getElementById("pipe-instr"); var instr = (pd.instruction_shown || pd.instruction || "").replace(/\s*\n\s*/g, " "); if (ins && instr) ins.textContent = /^[“"]/.test(instr) ? instr : "“" + instr + "”";
+    }).catch(function () {});
+  }).catch(function () {});
+
+  getJSON("radar").then(function (d) { Charts.radar(document.getElementById("radar"), d); }).catch(function () {});
+  getJSON("force_trend").then(function (d) { Charts.forceTrend(document.getElementById("force-trend"), d); }).catch(function () {});
+  getJSON("train_touch").then(function (d) { Charts.trainTouch(document.getElementById("train-touch-chart"), d); }).catch(function () {});
+  getJSON("horizon").then(function (d) { if (Charts.horizon) Charts.horizon(document.getElementById("horizon-chart"), d); }).catch(function () {});
+  getJSON("motivation").then(function (d) {
+    var ymax = 0;
+    d.clips.forEach(function (c) { ymax = Math.max(ymax, Math.max.apply(null, c.force.left), Math.max.apply(null, c.force.right)); });
+    d.clips.forEach(function (c, i) {
+      var el = document.querySelector('.mchart[data-clip="' + c.key + '"]');
+      if (el) Charts.forceLines(el, c, ymax * 1.2, i === 0, d.frames);
+    });
+  }).catch(function () {});
+  document.querySelectorAll(".cmp").forEach(function (root) {
+    new Players.CmpPlayer(root, BASE, root.getAttribute("data-clips").split(","));
+  });
 
   // ------------------------------------------------------------ BibTeX copy
   var copyBtn = document.getElementById("copy-bib");
