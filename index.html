@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dexterous Tactile World Model</title>
+  <meta name="description" content="Predict future egocentric human manipulation videos with whole-hand touch.">
+  <meta property="og:title" content="Dexterous Tactile World Model">
+  <meta property="og:description" content="Predict future egocentric human manipulation videos with whole-hand touch.">
+  <meta property="og:image" content="static/media/figures/fig_teaser.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' rx='7' fill='%230b0e14'/%3E%3Crect x='5' y='5' width='6' height='6' rx='1.5' fill='%23ffe39f'/%3E%3Crect x='12' y='5' width='6' height='6' rx='1.5' fill='%23f7a24f'/%3E%3Crect x='19' y='5' width='6' height='6' rx='1.5' fill='%23ffe39f'/%3E%3Crect x='5' y='12' width='6' height='6' rx='1.5' fill='%23f7a24f'/%3E%3Crect x='12' y='12' width='6' height='6' rx='1.5' fill='%23b3336a'/%3E%3Crect x='19' y='12' width='6' height='6' rx='1.5' fill='%23e2505f'/%3E%3Crect x='5' y='19' width='6' height='6' rx='1.5' fill='%23ffe39f'/%3E%3Crect x='12' y='19' width='6' height='6' rx='1.5' fill='%23e2505f'/%3E%3Crect x='19' y='19' width='6' height='6' rx='1.5' fill='%23f7a24f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="mark" href="#top">DT<span>WM</span></a>
+    <nav aria-label="Sections">
+      <a href="#motivation">Motivation</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#results">Results</a>
+      <a href="#why">Why touch helps</a>
+      <a href="#bibtex-section">BibTeX</a>
+    </nav>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme">dark</button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============================================================ hero -->
+  <section class="hero" aria-labelledby="title">
+    <canvas id="taxels" aria-hidden="true"></canvas>
+    <div class="wrap hero-grid">
+      <div>
+        <h1 id="title">Dexterous <span class="heat">Tactile</span> World Model</h1>
+        <p class="subtitle">Predict future egocentric human manipulation videos with whole-hand touch</p>
+
+        <p class="authors">
+          Ziyao Zeng<sup>1</sup>, Xiatao Sun<sup>1</sup>, Hao Wang<sup>2</sup>, Yueyang Pan<sup>3</sup>, Zhengxiang Yu<sup>4</sup>,
+          Fengyu Yang<sup>1</sup>, Tianyu Liu<sup>1</sup>, Zhiwen Fan<sup>2</sup>, Daniel Rakita<sup>1</sup>
+          <small><sup>1</sup>Yale University&ensp; <sup>2</sup>Texas A&amp;M University&ensp;
+            <sup>3</sup>University of California, Los Angeles&ensp; <sup>4</sup>University of Washington</small>
+        </p>
+
+        <div class="links">
+          <span class="btn soon" aria-disabled="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+            Paper <span class="tag">(coming soon)</span>
+          </span>
+          <a class="btn line" href="https://github.com/Adonis-galaxy/Dexterous-Tactile-World-Model">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>
+            Code
+          </a>
+          <a class="btn line" href="#bibtex-section">BibTeX</a>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-frame">
+          <img id="task-gif" src="static/media/gifs/task_spray_can.gif" width="800" height="1080"
+               alt="The prediction task on a held-out clip: the observed frames and both gloves' readings, then the future frames to predict.">
+        </div>
+        <div class="chips" role="group" aria-label="Choose a clip">
+          <button type="button" class="chip" aria-pressed="true" data-task="static/media/gifs/task_spray_can.gif">Spray can</button>
+          <button type="button" class="chip" aria-pressed="false" data-task="static/media/gifs/task_bathroom_items.gif">Bathroom items</button>
+          <button type="button" class="chip" aria-pressed="false" data-task="static/media/gifs/task_fold_shorts.gif">Fold shorts</button>
+          <button type="button" class="chip" aria-pressed="false" data-task="static/media/gifs/task_g_clamp_release.gif">G-clamp</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap timeline">
+      <div class="scroller">
+        <svg viewBox="0 0 1000 104" role="img" aria-labelledby="tl-title">
+          <title id="tl-title">Frames 0 to 12 are observed with touch and hand pose; frames 13 to 48 are predicted at once.</title>
+          <text class="tl-seg o" x="10" y="22">observed: RGB, hand pose, touch</text>
+          <text class="tl-seg p" x="270" y="22">predicted: 36 frames at once</text>
+          <g class="tl-obs">
+            <rect x="10" y="32" width="17" height="22" rx="3"/><rect x="30" y="32" width="17" height="22" rx="3"/><rect x="50" y="32" width="17" height="22" rx="3"/><rect x="70" y="32" width="17" height="22" rx="3"/><rect x="90" y="32" width="17" height="22" rx="3"/><rect x="110" y="32" width="17" height="22" rx="3"/><rect x="130" y="32" width="17" height="22" rx="3"/><rect x="150" y="32" width="17" height="22" rx="3"/><rect x="170" y="32" width="17" height="22" rx="3"/><rect x="190" y="32" width="17" height="22" rx="3"/><rect x="210" y="32" width="17" height="22" rx="3"/><rect x="230" y="32" width="17" height="22" rx="3"/><rect x="250" y="32" width="17" height="22" rx="3"/>
+          </g>
+          <g class="tl-pred">
+            <rect x="270" y="32" width="17" height="22" rx="3"/><rect x="290" y="32" width="17" height="22" rx="3"/><rect x="310" y="32" width="17" height="22" rx="3"/><rect x="330" y="32" width="17" height="22" rx="3"/><rect x="350" y="32" width="17" height="22" rx="3"/><rect x="370" y="32" width="17" height="22" rx="3"/><rect x="390" y="32" width="17" height="22" rx="3"/><rect x="410" y="32" width="17" height="22" rx="3"/><rect x="430" y="32" width="17" height="22" rx="3"/><rect x="450" y="32" width="17" height="22" rx="3"/><rect x="470" y="32" width="17" height="22" rx="3"/><rect x="490" y="32" width="17" height="22" rx="3"/><rect x="510" y="32" width="17" height="22" rx="3"/><rect x="530" y="32" width="17" height="22" rx="3"/><rect x="550" y="32" width="17" height="22" rx="3"/><rect x="570" y="32" width="17" height="22" rx="3"/>
+          </g>
+          <g class="tl-pred" opacity="0.7">
+            <rect x="590" y="32" width="17" height="22" rx="3"/><rect x="610" y="32" width="17" height="22" rx="3"/><rect x="630" y="32" width="17" height="22" rx="3"/><rect x="650" y="32" width="17" height="22" rx="3"/><rect x="670" y="32" width="17" height="22" rx="3"/><rect x="690" y="32" width="17" height="22" rx="3"/><rect x="710" y="32" width="17" height="22" rx="3"/><rect x="730" y="32" width="17" height="22" rx="3"/><rect x="750" y="32" width="17" height="22" rx="3"/><rect x="770" y="32" width="17" height="22" rx="3"/><rect x="790" y="32" width="17" height="22" rx="3"/><rect x="810" y="32" width="17" height="22" rx="3"/><rect x="830" y="32" width="17" height="22" rx="3"/><rect x="850" y="32" width="17" height="22" rx="3"/><rect x="870" y="32" width="17" height="22" rx="3"/><rect x="890" y="32" width="17" height="22" rx="3"/>
+          </g>
+          <g class="tl-pred" opacity="0.45">
+            <rect x="910" y="32" width="17" height="22" rx="3"/><rect x="930" y="32" width="17" height="22" rx="3"/><rect x="950" y="32" width="17" height="22" rx="3"/><rect x="970" y="32" width="17" height="22" rx="3"/>
+          </g>
+          <rect class="tl-head" x="10" y="57" width="17" height="3" rx="1.5"/>
+          <text class="tl-tick" x="18.5" y="72" text-anchor="middle">0</text>
+          <text class="tl-tick" x="258.5" y="72" text-anchor="middle">12</text>
+          <text class="tl-tick" x="278.5" y="72" text-anchor="middle">13</text>
+          <text class="tl-tick" x="578.5" y="72" text-anchor="middle">28</text>
+          <text class="tl-tick" x="898.5" y="72" text-anchor="middle">44</text>
+          <text class="tl-tick" x="978.5" y="72" text-anchor="middle">48</text>
+          <path class="tl-bracket" d="M270 80 v6 H587 v-6"/>
+          <path class="tl-bracket" d="M590 80 v6 H907 v-6"/>
+          <path class="tl-bracket" d="M910 80 v6 H987 v-6"/>
+          <text class="tl-chunk" x="428.5" y="100" text-anchor="middle">chunk 1</text>
+          <text class="tl-chunk" x="748.5" y="100" text-anchor="middle">chunk 2</text>
+          <text class="tl-chunk" x="948.5" y="100" text-anchor="middle">3</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ motivation (slide 41) -->
+  <section class="section" id="motivation" aria-labelledby="mot-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="mot-h">Predict the future with touch</h2>
+        <div class="heat-rule"></div>
+      </div>
+      <div class="statements">
+        <article class="statement">
+          <h3>World models predict the future frames of physical interaction.</h3>
+          <p>They can generate training data, initialize policy models, and serve as simulators for embodied AI.</p>
+        </article>
+        <article class="statement">
+          <h3>Force is invisible.</h3>
+          <p>How much force the hand applies, and how it changes over time, decides how an interaction unfolds.</p>
+        </article>
+        <article class="statement">
+          <h3>Dexterous touch measures them directly.</h3>
+          <p>Whole-hand tactile gloves now record where and how firmly both hands press.</p>
+        </article>
+      </div>
+      <p class="question">Can world models use <span>dexterous touch</span> to better predict the future?</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ pipeline (slide 44) -->
+  <section class="section" id="pipeline" aria-labelledby="pipe-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="pipe-h">Dexterous Tactile World Model</h2>
+        <p>We embed each hand's tactile reading and add it to the video tokens at that hand's location, through a
+          zero-initialized residual in a pretrained video diffusion transformer.</p>
+        <div class="heat-rule"></div>
+      </div>
+      <div class="media card pad">
+        <img src="static/media/figures/pipeline.png" loading="lazy" width="1963" height="753"
+             alt="Pipeline: observed frames, hand pose and touch; each hand's tactile embedding is placed with a footprint at the hand and added as a residual into 5 of the 30 blocks of a video diffusion transformer, which predicts the future frames.">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ results (slides 45 to 48) -->
+  <section class="section" id="results" aria-labelledby="res-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="res-h">Better visual quality, hand location and motion</h2>
+        <div class="heat-rule"></div>
+      </div>
+      <div class="media card pad">
+        <img src="static/media/figures/fig_teaser.png" loading="lazy" width="1815" height="707"
+             alt="A held-out clip of two hands opening a spray can: tactile field, observation and conditioning footprint at frame 12, then the ground truth, the vision-only prediction and the DTWM prediction at frame 44; a radar chart compares DTWM with TouchWorld, FeelWorld and VT-WM on six metrics.">
+      </div>
+      <div class="switch" role="tablist" aria-label="Choose a clip">
+        <button type="button" role="tab" aria-selected="true" data-cmp="static/media/gifs/cmp_pick_up_power_adapter.gif">Pick up power adapter</button>
+        <button type="button" role="tab" aria-selected="false" data-cmp="static/media/gifs/cmp_squeeze_toothpaste.gif">Squeeze toothpaste</button>
+      </div>
+      <div class="media card">
+        <img id="cmp-gif" src="static/media/gifs/cmp_pick_up_power_adapter.gif" loading="lazy" width="1414" height="652"
+             alt="First predicted chunk of all six models: Pick up power adapter">
+      </div>
+      <p class="cap">First predicted chunk, frames 13 to 28. Dashed boxes: ground-truth hand regions.</p>
+    </div>
+  </section>
+
+  <section class="section" id="unseen" aria-labelledby="ood-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="ood-h">Better generalization to unseen objects &amp; tasks</h2>
+        <div class="heat-rule"></div>
+      </div>
+      <div class="media card">
+        <img src="static/media/gifs/cmp_ood_push_cart.gif" loading="lazy" width="1414" height="652"
+             alt="First predicted chunk of all six models on pushing a cart, a task unseen in training.">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ why touch helps (slides 49, 50; paper Figure 6) -->
+  <section class="section" id="why" aria-labelledby="why-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="why-h">Why touch helps?</h2>
+        <p>Touch history correlates with future manipulation. The observed frames look alike, but the observed touch
+          evolves differently, and so do the manipulations that follow.</p>
+        <div class="heat-rule"></div>
+      </div>
+      <div class="duo">
+        <div class="card pad">
+          <img src="static/media/figures/fig_motivation.png" loading="lazy" width="1140" height="1159"
+               alt="Two clips of a G-clamp task that look alike at the last observed frame: the summed pressure holds steady in one and decays in the other; one second later the grasp holds in the first and the hands have released in the second.">
+        </div>
+        <div class="txt">
+          <h3>Changing touch &#8594; the interaction is about to change</h3>
+          <p>A decaying touch leads to a release 2.5&times; as often (16%), a rising touch 1.8&times; as often (12%).</p>
+          <p>A rising force usually marks a short push, press or pinch in progress, which ends within a second and the
+            hand lets go.</p>
+          <div class="card pad">
+            <img src="static/media/figures/force_trend.png" loading="lazy" width="2666" height="1280"
+                 alt="Chance that a hand in contact lets go within the next half second: 7% when its force holds steady, 16% when it decays, 12% when it rises.">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ training with touch (slide 51) -->
+  <section class="section" id="train-touch" aria-labelledby="tt-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="tt-h">Training with touch helps, even without it at inference</h2>
+        <p>Training with touch teaches the model to tell visually similar frames with different contact states. Even
+          without touch at inference, it applies this learned representation to estimate current contact, which also
+          reduces its uncertainty. An uncertain model averages over possible futures and produces blur.</p>
+        <div class="heat-rule"></div>
+      </div>
+      <div class="media card pad">
+        <img src="static/media/figures/train_touch.png" loading="lazy" width="2666" height="1120"
+             alt="Full-frame LPIPS, hand motion, hand area error and sharpness for the vision-only baseline, touch in training only, and touch in training and inference.">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ horizon (paper abstract, Figure 7) -->
+  <section class="section" id="horizon" aria-labelledby="hz-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="hz-h">The benefit increases over the prediction horizon</h2>
+        <div class="heat-rule"></div>
+      </div>
+      <div class="media card pad">
+        <img src="static/media/figures/fig_horizon.png" loading="lazy" width="1590" height="599"
+             alt="(a) LPIPS of DTWM and the vision-only model over cumulative scoring windows; (b) the per-frame difference in four temporal segments, larger after the first chunk.">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ bibtex -->
+  <section class="section" id="bibtex-section" aria-labelledby="bib-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="bib-h">BibTeX</h2></div>
+      <div class="bib">
+        <button type="button" class="copy" id="copy-bib">Copy</button>
+        <!-- TODO: add the arXiv identifier once the paper is posted -->
+<pre id="bibtex">@article{zeng2026dtwm,
+  title   = {Dexterous Tactile World Model},
+  author  = {Zeng, Ziyao and Sun, Xiatao and Wang, Hao and Pan, Yueyang and Yu, Zhengxiang
+             and Yang, Fengyu and Liu, Tianyu and Fan, Zhiwen and Rakita, Daniel},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">Tactile data from <a href="https://arxiv.org/abs/2605.13083">TouchAnything</a> (Zhou et al., 2026).</div>
+</footer>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>
