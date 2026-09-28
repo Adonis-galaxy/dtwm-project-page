@@ -13,7 +13,7 @@
   // Plays at 15 fps, half the recording's 30 fps (the speed of the talk GIFs): the 13 observed frames, then the unknown
   // future for as long again, then onEnd (the page moves on to the next task).
   function TaskPlayer(opts) {
-    var self = this, FPS = 15, SRC_FPS = 8, OBS = 13, FUT = 13, data = null, visible = true, t0 = 0, raf = 0, token = 0;
+    var self = this, FPS = 15, SRC_FPS = 8, OBS = 13, FUT = 13, data = null, visible = true, ready = false, t0 = 0, raf = 0, token = 0;
     var cells = opts.cells || [];
     function fetchJSON(key) { return fetch(opts.base + "data/task_" + key + ".json").then(function (r) { return r.json(); }); }
     self.prefetch = function (key) {   // warm the cache so the next task starts without a gap
@@ -23,6 +23,7 @@
     };
     self.load = function (key) {
       var my = ++token;
+      ready = false;   // the clock runs only once this clip's frames are decodable
       return fetchJSON(key).then(function (d) {
         if (my !== token) return;
         data = d; self._last = null;
@@ -40,9 +41,9 @@
           if (my !== token || went) return;
           went = true;
           v.removeEventListener("loadeddata", go); v.playbackRate = FPS / SRC_FPS;
-          self._last = null; showFrame(0, false); self._last = 0; t0 = performance.now(); start();
+          self._last = null; showFrame(0, false); self._last = 0; t0 = performance.now(); ready = true; start();
         };
-        if (v.readyState >= 2) go(); else { v.addEventListener("loadeddata", go); setTimeout(go, 2500); }
+        if (v.readyState >= 2) go(); else v.addEventListener("loadeddata", go);   // start only on real frames
       });
     };
     function showFrame(i, future) {
@@ -60,7 +61,7 @@
       });
     }
     function tick(now) {
-      if (!visible || !data) { raf = 0; return; }
+      if (!visible || !ready) { raf = 0; return; }
       var f = Math.max(0, Math.floor((now - t0) / 1000 * FPS)), v = opts.video;
       if (f >= OBS + FUT) {
         raf = 0;
@@ -83,7 +84,7 @@
     function start() { if (!raf) raf = requestAnimationFrame(tick); }
     onVisible(opts.video, function (v) {
       var was = visible; visible = v;
-      if (v && !reduce) { if (!was) t0 = performance.now(); start(); } else if (!v) opts.video.pause();
+      if (v && !reduce && ready) { if (!was) t0 = performance.now(); start(); } else if (!v) opts.video.pause();
     });
     self.redraw = function () { if (data) showFrame(self._last == null ? OBS - 1 : self._last, (self._last || 0) >= OBS); };
   }
@@ -127,8 +128,13 @@
       });
     });
     videos.forEach(function (v) { v.muted = true; v.loop = true; v.playsInline = true; });
-    onVisible(root, function (v) { visible = v; if (v && !reduce) play(); else videos.forEach(function (x) { x.pause(); }); });
-    load();
+    var loaded = false;   // posters now; the six videos load when the grid first comes into view, not with the page
+    videos.forEach(function (v) { v.poster = src(v.getAttribute("data-model")).replace(/\.mp4$/, ".jpg"); });
+    onVisible(root, function (v) {
+      visible = v;
+      if (v && !loaded) { loaded = true; load(); return; }
+      if (v && !reduce) play(); else videos.forEach(function (x) { x.pause(); });
+    });
   }
 
   global.Players = { TaskPlayer: TaskPlayer, CmpPlayer: CmpPlayer };
