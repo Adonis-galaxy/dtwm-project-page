@@ -36,7 +36,7 @@
         v.load();
         v.playbackRate = FPS / SRC_FPS;
         if (reduce) { showFrame(OBS - 1, false); return; }
-        if (first) showFrame(0, false);
+        if (first) showFrame(OBS - 1, false);   // matches the poster while the clip loads
         var went = false, go = function () {
           if (my !== token || went) return;
           went = true;
