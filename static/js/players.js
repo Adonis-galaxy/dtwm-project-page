@@ -9,18 +9,40 @@
   }
 
   // ---------------------------------------------------------------- hero task player
-  // opts: {video, canvas, veil, tag, cells (timeline cell elements, 49), layout, base: "static/v2/"}
+  // opts: {video, canvas, veil, tag, cells (timeline cell elements, 49), layout, base: "static/v2/", onEnd}
+  // Plays at 15 fps, half the recording's 30 fps (the speed of the talk GIFs): the 13 observed frames, then the unknown
+  // future for as long again, then onEnd (the page moves on to the next task).
   function TaskPlayer(opts) {
-    var self = this, FPS = 8, OBS = 13, TOTAL = 49, data = null, visible = true, t0 = 0, raf = 0;
+    var self = this, FPS = 15, SRC_FPS = 8, OBS = 13, FUT = 13, data = null, visible = true, t0 = 0, raf = 0, token = 0;
+    var cells = opts.cells || [];
+    function fetchJSON(key) { return fetch(opts.base + "data/task_" + key + ".json").then(function (r) { return r.json(); }); }
+    self.prefetch = function (key) {   // warm the cache so the next task starts without a gap
+      fetchJSON(key).catch(function () {});
+      fetch(opts.base + "media/task/" + key + ".mp4").catch(function () {});
+      new Image().src = opts.base + "media/task/" + key + "_poster.jpg";
+    };
     self.load = function (key) {
-      return fetch(opts.base + "data/task_" + key + ".json").then(function (r) { return r.json(); }).then(function (d) {
-        data = d;
-        opts.video.poster = opts.base + "media/task/" + key + "_poster.jpg";
-        opts.video.src = opts.base + "media/task/" + key + ".mp4";
-        opts.video.load();
-        t0 = performance.now();
+      var my = ++token;
+      return fetchJSON(key).then(function (d) {
+        if (my !== token) return;
+        data = d; self._last = null;
+        var v = opts.video, first = !self._started;
+        self._started = true;
+        // the poster (frame 12) only paints the first view; later switches keep the veil up until frame 0 is ready
+        if (first || reduce) v.poster = opts.base + "media/task/" + key + "_poster.jpg"; else v.removeAttribute("poster");
+        v.src = opts.base + "media/task/" + key + ".mp4";
+        v.defaultPlaybackRate = FPS / SRC_FPS;
+        v.load();
+        v.playbackRate = FPS / SRC_FPS;
         if (reduce) { showFrame(OBS - 1, false); return; }
-        start();
+        if (first) showFrame(0, false);
+        var went = false, go = function () {
+          if (my !== token || went) return;
+          went = true;
+          v.removeEventListener("loadeddata", go); v.playbackRate = FPS / SRC_FPS;
+          self._last = null; showFrame(0, false); self._last = 0; t0 = performance.now(); start();
+        };
+        if (v.readyState >= 2) go(); else { v.addEventListener("loadeddata", go); setTimeout(go, 2500); }
       });
     };
     function showFrame(i, future) {
@@ -28,24 +50,41 @@
       var fi = Math.min(i, OBS - 1);
       Tactile.draw(opts.canvas, opts.layout, { pressure: data.pressure[fi], bend: data.bend[fi] }, data.vmax, { dim: future });
       opts.veil.classList.toggle("on", !!future);
-      opts.tag.textContent = future ? "future frame " + i + ": to predict" : "observed frame " + i;
+      opts.tag.textContent = future ? "future frame" : "observed frame " + i;
       opts.tag.classList.toggle("future", !!future);
-      if (opts.cells) opts.cells.forEach(function (c, k) { c.classList.toggle("now", k === i); c.classList.toggle("past", k < i); });
+      // observed: a cursor walks over frames 0-12; future: all 36 predicted frames light up together (predicted at once)
+      cells.forEach(function (c, k) {
+        c.classList.toggle("now", !future && k === i);
+        c.classList.toggle("past", future ? k < OBS : k < i);
+        c.classList.toggle("lit", !!future && k >= OBS);
+      });
     }
     function tick(now) {
       if (!visible || !data) { raf = 0; return; }
-      var f = Math.floor((now - t0) / 1000 * FPS) % (TOTAL + 8);
-      var i = Math.min(f, TOTAL - 1);
-      if (i < OBS) {
-        var vt = i / FPS + 0.01;
-        if (Math.abs(opts.video.currentTime - vt) > 0.25) { try { opts.video.currentTime = vt; } catch (e) {} }
-        if (opts.video.paused) { var p = opts.video.play(); if (p && p.catch) p.catch(function () {}); }
-      } else if (!opts.video.paused) { opts.video.pause(); try { opts.video.currentTime = (OBS - 1) / FPS; } catch (e) {} }
-      if (i !== self._last) { showFrame(i, i >= OBS); self._last = i; }
+      var f = Math.max(0, Math.floor((now - t0) / 1000 * FPS)), v = opts.video;
+      if (f >= OBS + FUT) {
+        raf = 0;
+        if (opts.onEnd) opts.onEnd(); else { t0 = now; start(); }
+        return;
+      }
+      if (f < OBS) {
+        var vt = f / SRC_FPS + 0.01;
+        if (Math.abs(v.currentTime - vt) > 0.3) { try { v.currentTime = vt; } catch (e) {} }
+        if (v.paused && f < OBS - 1) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      } else {   // hold frame 12 under the veil
+        if (!v.paused) v.pause();
+        var hold = (OBS - 1) / SRC_FPS;   // frame 12 spans [1.5, 1.625) s; only seek if playback fell behind
+        if (!v.seeking && v.currentTime < hold - 0.02) { try { v.currentTime = hold + 0.01; } catch (e) {} }
+      }
+      var future = f >= OBS, i = future ? OBS : f;
+      if (i !== self._last) { showFrame(i, future); self._last = i; }
       raf = requestAnimationFrame(tick);
     }
     function start() { if (!raf) raf = requestAnimationFrame(tick); }
-    onVisible(opts.video, function (v) { visible = v; if (v && !reduce) start(); else if (!v) opts.video.pause(); });
+    onVisible(opts.video, function (v) {
+      var was = visible; visible = v;
+      if (v && !reduce) { if (!was) t0 = performance.now(); start(); } else if (!v) opts.video.pause();
+    });
     self.redraw = function () { if (data) showFrame(self._last == null ? OBS - 1 : self._last, (self._last || 0) >= OBS); };
   }
 

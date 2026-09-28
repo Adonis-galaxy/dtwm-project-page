@@ -37,16 +37,19 @@
     // hero task player; the timeline cells double as its progress bar
     var cells = [].slice.call(document.querySelectorAll(".tl-cell"));
     var tp = new Players.TaskPlayer({ video: document.getElementById("task-video"), canvas: document.getElementById("task-tactile"),
-      veil: document.getElementById("task-veil"), tag: document.getElementById("task-tag"), cells: cells, layout: layout, base: BASE });
-    tp.load("spray_can");
+      veil: document.getElementById("task-veil"), tag: document.getElementById("task-tag"), cells: cells, layout: layout, base: BASE,
+      onEnd: function () { select((cur + 1) % chips.length); } });
+    // the four tasks play in turn; a click jumps to that task and the rotation continues from there
+    var chips = [].slice.call(document.querySelectorAll("[data-task]")), cur = 0;
+    function select(k) {
+      cur = k;
+      chips.forEach(function (x, j) { x.setAttribute("aria-pressed", j === k ? "true" : "false"); });
+      tp.load(chips[k].getAttribute("data-task"));
+      tp.prefetch(chips[(k + 1) % chips.length].getAttribute("data-task"));
+    }
+    chips.forEach(function (b, k) { b.addEventListener("click", function () { select(k); }); });
+    select(0);
     redrawers.push(tp.redraw);
-    var chips = document.querySelectorAll("[data-task]");
-    chips.forEach(function (b) {
-      b.addEventListener("click", function () {
-        chips.forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
-        b.setAttribute("aria-pressed", "true"); tp.load(b.getAttribute("data-task"));
-      });
-    });
     window.addEventListener("resize", tp.redraw);
 
     // paper Figure 1 tactile tile and pipeline touch panel

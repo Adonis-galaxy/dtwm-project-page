@@ -392,7 +392,7 @@ p { margin: 0; }
 .veil {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
   background: color-mix(in srgb, var(--bg) 58%, transparent); backdrop-filter: blur(3px) saturate(60%);
-  -webkit-backdrop-filter: blur(3px) saturate(60%); opacity: 0; transition: opacity 0.35s ease;
+  -webkit-backdrop-filter: blur(3px) saturate(60%); opacity: 0; transition: opacity 0.15s ease;
 }
 .veil.on { opacity: 1; }
 .veil .q { font-family: var(--font-display); font-weight: 700; font-size: clamp(4rem, 12vw, 7rem); line-height: 1; color: var(--future); }
@@ -419,6 +419,7 @@ p { margin: 0; }
 .tl-cell.o { background: var(--h-obs); } .tl-cell.p { background: var(--h-pred); }
 .tl-cell.p2 { opacity: 0.72; } .tl-cell.p3 { opacity: 0.45; }
 .tl-cell.now { transform: scaleY(1.35); box-shadow: 0 0 0 2px var(--h-head); }
+.tl-cell.lit { transform: scaleY(1.2); filter: brightness(1.15) saturate(1.1); }
 .tl-tick { grid-row: 3; font-family: var(--font-mono); font-size: 0.7rem; color: var(--h-muted); text-align: center; }
 .tl-chunk { grid-row: 4; font-family: var(--font-mono); font-size: 0.7rem; color: var(--h-muted); text-align: center; border-top: 1px solid var(--h-muted); padding-top: 3px; margin-inline: 1px; opacity: 0.85; }
 @media (max-width: 560px) {
