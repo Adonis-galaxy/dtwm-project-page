@@ -15,8 +15,3 @@ Static project page for *Dexterous Tactile World Model*. No build step: `index.h
 - `static/v2/data/*.json`: the numbers behind each chart, each file naming the evaluation outputs it came from.
 - `static/v2/media/`: the video clips (H.264 MP4) and stills.
 - `static/media/figures/fig_teaser.png`: only used as the link-preview image.
-
-## When the paper is posted
-
-- Paper button in the hero (currently "coming soon").
-- `#bibtex` block: add the arXiv identifier.

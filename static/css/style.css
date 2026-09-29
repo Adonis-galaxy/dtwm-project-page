@@ -195,8 +195,6 @@ p { margin: 0; }
 }
 .btn:hover { transform: translateY(-1px); }
 .btn.line { background: transparent; color: var(--h-ink); border-color: var(--h-line); }
-.btn.soon { cursor: default; opacity: 0.9; }
-.btn.soon:hover { transform: none; }
 .btn .tag { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 400; opacity: 0.7; }
 .btn svg { width: 16px; height: 16px; }
 
